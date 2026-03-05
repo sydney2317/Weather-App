@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes"> 
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"> 
+    <title>Weather App</title> 
+    <link rel="icon" type="image/png" href="images/Weather-App-Image.png"> 
+    <link rel="apple-touch-icon" href="images/apple-touch-icon-iphone60x60.png"> 
+    <link rel="apple-touch-icon" sizes="60x60" href="images/apple-touch-icon-ipad-76x76.png"> 
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-iphone-retina-120x120.png"> 
+    <link rel="apple-touch-icon" sizes="144x144" href="images/apple-touch-icon-ipad-retina-152x152.png">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        .vertical {
+            border-left: 5px solid black;
+            height: 200px
+        }
+    </style>
+</head>
+<body class="bg-dark">
+    <div class="col-12 d-flex justify-content-center min-vh-100 align-items-center">
+        <div class="card col-11 col-md-4 col-lg-6">
+            <div class="card-body">
+                <h1 class="col-12 text-center my-5">Current Weather Conditions</h1>
+                <hr />
+                <div class="row align-items-center">
+                    <div class="col-5 text-center">
+                        <h2 id="txtLocation">Cookeville, TN <i class="bi bi-geo-alt" style="color:red"></i></h2>
+                    </div>
+                    <div class="col-7 vertical d-flex flex-column justify-content-center text-center">
+                        <h3 id="txtWeatherCode"></h3>
+                        <hr />
+                        <h3 id="txtTemperature"></h3>
+                        <h3 id="txtHumidity"></h3>
+                    </div>
+                </div>
+                <hr />
+                <footer class="text-center mt-3">
+                    Data provided by <a href="https://open-meteo.com/">Open-Meteo</a>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script>
+        fetch('https://api.open-meteo.com/v1/forecast?latitude=36.1682&longitude=-85.5016&hourly=temperature_2m,precipitation_probability,weather_code,relative_humidity_2m,cloud_cover,wind_speed_10m&current=temperature_2m,relative_humidity_2m,precipitation,weather_code&timezone=America%2FChicago&wind_speed_unit=mph&temperature_unit=fahrenheit&precipitation_unit=inch')
+        .then(response => {
+            if(!response.ok){
+                throw new Error('Bad HTTP Response')
+            }
+            return response.json()
+        })
+        .then(data => {
+
+            document.querySelector('#txtTemperature').innerHTML =` Temperature: ${data.current.temperature_2m}°F <i class="bi bi-thermometer" style="color: red"></i>`
+            document.querySelector('#txtHumidity').innerHTML =` Humidity: ${data.current.relative_humidity_2m}% <i class="bi bi-droplet-half" style="color: blue"></i>`
+
+            let Conditions = data.current.weather_code
+            if (Conditions == 0) {
+                document.getElementById('txtWeatherCode').innerHTML = `Clear Sky <i class="bi bi-brightness-high"></i>`
+            }
+            else if (Conditions == 1 || Conditions == 2) {
+                document.getElementById('txtWeatherCode').innerHTML = `Partly Cloudy <i class="bi bi-cloud-sun"></i>`
+            }
+            else if (Conditions == 3) {
+                document.getElementById('txtWeatherCode').innerHTML = `Overcast <i class="bi bi-clouds"></i>`
+            }
+            else if (Conditions == 45 || Conditions == 48) {
+                document.getElementById('txtWeatherCode').innerHTML = `Foggy <i class="bi bi-cloud-fog2"></i>`
+            }
+            else if (Conditions == 51 || Conditions == 53 || Conditions == 55) {
+                document.getElementById('txtWeatherCode').innerHTML = `Drizzle <i class="bi bi-cloud-drizzle"></i>`
+            }
+            else if (Conditions == 56 || Conditions == 57) {
+                document.getElementById('txtWeatherCode').innerHTML = `Freezing Drizzle <i class="bi bi-cloud-drizzle"></i>`
+            }
+            else if (Conditions == 61 || Conditions == 63 || Conditions == 65) {
+                document.getElementById('txtWeatherCode').innerHTML = `Rain <i class="bi bi-cloud-rain"></i>`
+            }
+            else if (Conditions == 66 || Conditions == 67) {
+                document.getElementById('txtWeatherCode').innerHTML = `Freezing Rain <i class="bi bi-cloud-hail"></i>`
+            }
+            else if (Conditions == 71 || Conditions == 73 || Conditions == 75) {
+                document.getElementById('txtWeatherCode').innerHTML = `Snow Fall <i class="bi bi-cloud-snow"></i>`
+            }
+            else if (Conditions == 77) {
+                document.getElementById('txtWeatherCode').innerHTML = `Snow grains <i class="bi bi-cloud-snow"></i>`
+            }
+            else if (Conditions == 80 || Conditions == 81 || Conditions == 82) {
+                document.getElementById('txtWeatherCode').innerHTML = `Rain Showers <i class="bi bi-cloud-rain"></i>`
+            }
+            else if (Conditions == 85 || Conditions == 86) {
+                document.getElementById('txtWeatherCode').innerHTML = `Snow Showers <i class="bi bi-cloud-snow"></i>`
+            }
+            else if (Conditions >= 95) {
+                document.getElementById('txtWeatherCode').innerHTML = `Thunder Storms <i class="bi bi-cloud-lightning-rain"></i>`
+            }
+            else {
+                document.getElementById('txtWeatherCode').innerHTML = "Unknown"
+            }
+        })
+    </script>
+</body>
+</html>
