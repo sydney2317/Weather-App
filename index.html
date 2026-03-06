@@ -16,28 +16,19 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link rel="manifest" href="manifest.json">
-    <style>
-        .vertical {
-            border-left: 5px solid black;
-            height: 200px
-        }
-    </style>
 </head>
 <body class="bg-dark">
     <div class="col-12 d-flex justify-content-center min-vh-100 align-items-center">
-        <div class="card col-11 col-md-4 col-lg-6">
+        <div class="card col-11 col-lg-8">
             <div class="card-body">
-                <h1 class="col-12 text-center my-5">Current Weather Conditions</h1>
-                <hr />
-                <div class="row align-items-center">
-                    <div class="col-5 text-center">
+                <div class="row align-items-center d-flex justify-content-center text-center">
+                    <h2>Current Conditions</h2>
+                    <hr />
+                    <div class="col-12 col-md-8 col-lg-6 text-center">
+                        <h2 id="txtWeatherCode"></h2>
+                        <h2 id="txtTemperature"></h2>
+                        <h2 id="txtHumidity"></h2>
                         <h2 id="txtLocation">Cookeville, TN <i class="bi bi-geo-alt" style="color:red"></i></h2>
-                    </div>
-                    <div class="col-7 vertical d-flex flex-column justify-content-center text-center">
-                        <h3 id="txtWeatherCode"></h3>
-                        <hr />
-                        <h3 id="txtTemperature"></h3>
-                        <h3 id="txtHumidity"></h3>
                     </div>
                 </div>
                 <hr />
@@ -51,19 +42,28 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script>
+        //fetch the weather data from the api link
         fetch('https://api.open-meteo.com/v1/forecast?latitude=36.1682&longitude=-85.5016&hourly=temperature_2m,precipitation_probability,weather_code,relative_humidity_2m,cloud_cover,wind_speed_10m&current=temperature_2m,relative_humidity_2m,precipitation,weather_code&timezone=America%2FChicago&wind_speed_unit=mph&temperature_unit=fahrenheit&precipitation_unit=inch')
+        
+        //thow an error if the link doesnt respond or work
         .then(response => {
             if(!response.ok){
                 throw new Error('Bad HTTP Response')
             }
-            return response.json()
+            return response.json() // Parse response as JSON
         })
-        .then(data => {
 
+        //process the data from the json response
+        .then(data => {
+            //Display current temperature with a thermostat icon
             document.querySelector('#txtTemperature').innerHTML =` Temperature: ${data.current.temperature_2m}°F <i class="bi bi-thermometer" style="color: red"></i>`
+            //Display current humidity with a droplet icon
             document.querySelector('#txtHumidity').innerHTML =` Humidity: ${data.current.relative_humidity_2m}% <i class="bi bi-droplet-half" style="color: blue"></i>`
 
+            //set conditions to current weather code for if else statements
             let Conditions = data.current.weather_code
+            //The weather code detemines which statement to display
+            //Corresponding weather icon is displayed depending on the weather code
             if (Conditions == 0) {
                 document.getElementById('txtWeatherCode').innerHTML = `Clear Sky <i class="bi bi-brightness-high"></i>`
             }
@@ -103,10 +103,19 @@
             else if (Conditions >= 95) {
                 document.getElementById('txtWeatherCode').innerHTML = `Thunder Storms <i class="bi bi-cloud-lightning-rain"></i>`
             }
+            //else statement for any unknown weather codes
             else {
                 document.getElementById('txtWeatherCode').innerHTML = "Unknown"
             }
         })
+        /*Generative AI Usage:
+            ChatGPT was used to help debug the JavaScript portion of this project.
+            It specifically helped with correcting the structure and logic
+            of the if/else statements used for handling the weather codes and displaying
+            the correct condition and icon. It was also used to clarify the purpose
+            and behavior of specific lines/elements of the JavaScript code to 
+            improve my understanding.
+        */
     </script>
 </body>
 </html>
